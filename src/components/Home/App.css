@@ -1,0 +1,118 @@
+.homePage {
+    width: 100vw;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.homeWrapper {
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px 5%;
+    align-items: center;
+    flex-direction: column;
+}
+
+.headingArea {
+    justify-content: space-between;
+    width: 100%;
+}
+
+.addPtnBtn {
+    background-color: #6f11f5;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    transition: all .5s;
+}
+
+.addPtnBtn:hover{
+    background-color: #580cc2;
+}
+
+.searchInputOfstudent {
+    flex: 1;
+    padding: 10px;
+}
+
+.searchDiv {
+    width: 100%;
+    margin-top: 50px;
+    padding-left: 20px;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid white;
+}
+
+.searchDiv.focused {
+    border: 2px solid gold;
+}
+
+
+.searchBtnOfstudent {
+    background-color: #6f11f5;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    transition: all .5s;
+}
+.searchBtnOfstudent:hover{
+    background-color: #580cc2;
+}
+
+.searchInputOfstudent {
+    outline: none;
+    background-color: transparent;
+    border: none;
+}
+
+
+.allProducts{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.singleData{
+    transition: all .5s;
+}
+
+.singleData:hover p {
+    color: #6f11f5;
+    text-decoration: underline;
+}
+
+
+.add-studentData-body div{
+    flex-direction: column;
+    margin: 20px auto;
+}
+
+.add-studentData-body div input{
+    padding: 5px 20px;
+}
+
+.divofstudentdescription{
+    width: 100%;
+}
+
+.textareaofaddstudentdata{
+    width: 100%;
+}
+
+.singlestudentDataModalBody span{
+    display: flex;
+    align-items: center;
+}
+
+.mainWordsinSPDMB{
+    font-weight: bold;
+    flex: 1;
+    margin-left: 10px;
+    text-align: right;
+}

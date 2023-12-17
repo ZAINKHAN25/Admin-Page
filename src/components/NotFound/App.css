@@ -1,0 +1,39 @@
+.d-flex {
+    display: flex;
+}
+
+.p-5 {
+    padding: 5px;
+}
+
+.m-5 {
+    margin: 5px;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.h1 {
+    color: #6f11f5;
+    font-size: 120px;
+}
+
+.mt-5 {
+    margin-top: 5px;
+}
+
+.btnofnotfound {
+    border: none;
+    padding: 15px 20px;
+    border-radius: 15px;
+    background-color: #6f11f5;
+    color: white;
+    font-size: 24px;
+    transition: all .5s;
+}
+
+.btnofnotfound:hover{
+    background-color: #580cc2;
+}
+
