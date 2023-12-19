@@ -1,6 +1,5 @@
 /* global $ */
 
-
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
@@ -8,31 +7,40 @@ import myApi from '../../myApi.js';
 import { useNavigate } from 'react-router-dom';
 import { ref, storage, getDownloadURL, uploadBytesResumable } from "../../firebaseConfig.js"
 
-
 function App() {
     const navigateTo = useNavigate();
     const loginLocalStorage = JSON.parse(localStorage.getItem('logintoken'));
 
-    const [studentsData, setstudentsData] = useState([]);
-    const [cuurentSinglestudent, setcuurentSinglestudent] = useState([]);
-    const [studentsNameInput, setstudentsNameInput] = useState('');
-    const [studentdescriptionInput, setstudentdescriptionInput] = useState('');
-    const [studentrupeesInput, setstudentrupeesInput] = useState('');
-    const [searchInput, setsearchInput] = useState('');
+    const [studentsData, setStudentsData] = useState([]);
+    const [cuurentSinglestudent, setCuurentSinglestudent] = useState([]);
+    const [studentsNameInput, setStudentsNameInput] = useState('');
+    const [studentdescriptionInput, setStudentdescriptionInput] = useState('');
+    const [studentrupeesInput, setStudentrupeesInput] = useState('');
+    const [searchInput, setSearchInput] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [course, setcourse] = useState([]);
-    const [selectedcourse, setselectedcourse] = useState();
+    const [course, setCourse] = useState([]);
+    const [selectedCourse, setSelectedCourse] = useState();
     const [image, setImage] = useState(null);
     const [url, setUrl] = useState('');
     const [progress, setProgress] = useState(0);
-    const [errTxt, seterrTxt] = useState('');
+    const [errTxt, setErrTxt] = useState('');
 
     useEffect(() => {
         gettingdata();
+        gettingallcourses();
         if (!loginLocalStorage) {
             navigateTo('login');
         }
     }, []);
+
+    function formatDate(inputDate) {
+        const date = new Date(inputDate);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${month}/${day}/${year}`;
+    }
 
     async function addStudentData() {
         try {
@@ -63,11 +71,11 @@ function App() {
                 );
             });
     
-            console.log(selectedcourse);
+            console.log(selectedCourse);
             const res = await axios.post(`${myApi}add-student`, {
                 studentname: studentsNameInput,
                 pic: imgurl || '',
-                course: selectedcourse,
+                course: selectedCourse,
             });
     
             const resTwo = await res.data;
@@ -83,7 +91,7 @@ function App() {
         try {
             var res = await axios.get(`${myApi}getallstudents`);
             var data = await res.data;
-            setstudentsData(data);
+            setStudentsData(data);
         } catch (error) {
             console.log(error);
         }
@@ -93,18 +101,17 @@ function App() {
         try {
             var res = await axios.get(`${myApi}getallcourse`);
             var data = await res.data;
-            setcourse(data);
+            setCourse(data);
         } catch (error) {
             console.log(error);
         }
     }
-    gettingallcourses();
 
     function Singlestudentdata({ data }) {
         return (
             <div
                 onClick={() => {
-                    setcuurentSinglestudent(data);
+                    setCuurentSinglestudent(data);
                 }}
                 className='singleData d-flex'
                 data-bs-toggle='modal'
@@ -121,9 +128,9 @@ function App() {
         const date = new Date();
 
         if (studentsNameInput === '' || studentdescriptionInput === '' || studentrupeesInput === '') {
-            seterrTxt('Please fill out the form completely');
+            setErrTxt('Please fill out the form completely');
             setTimeout(() => {
-                seterrTxt('');
+                setErrTxt('');
             }, 4000);
         } else {
             try {
@@ -142,15 +149,16 @@ function App() {
 
     async function seacrhFoo() {
         try {
-            var res = await axios.post(`${myApi}search-student`, { logintoken: loginLocalStorage, search: searchInput });
-            var restwo = await res.data.result;
-            setstudentsData(restwo);
+            var res = await axios.post(`${myApi}seachStudent`, { studentName: searchInput });
+            var restwo = await res.data.results;
+            console.log(restwo, "res two ");
+            setStudentsData(restwo);
         } catch (error) {
             console.log(error);
             if (searchInput === '') {
                 gettingdata();
             } else {
-                setstudentsData([]);
+                setStudentsData([]);
             }
         }
     }
@@ -180,7 +188,7 @@ function App() {
                                 <h4>Student Name:</h4>
                                 <input
                                     value={studentsNameInput}
-                                    onChange={(e) => setstudentsNameInput(e.target.value)}
+                                    onChange={(e) => setStudentsNameInput(e.target.value)}
                                     className='form-control'
                                     placeholder='Please enter student Name'
                                     type='text'
@@ -188,12 +196,10 @@ function App() {
                             </div>
                             <div className='studentrupeesdiv d-flex justify-content-center'>
                                 <h4>Student Course</h4>
-                                <select className='form-select' onChange={(e) => setselectedcourse(e.target.value)} aria-label='Default select example'>
-                                    {course == [] ? (`<div>Something went wrong</div>`) : course.map((x, i) => {
-                                        return (
-                                            <option>{x.coursename}</option>
-                                        )
-                                    })}
+                                <select className='form-select' onChange={(e) => setSelectedCourse(e.target.value)} aria-label='Default select example'>
+                                    {course && course.length > 0 ? course.map((x, i) => (
+                                        <option key={i}>{x.coursename}</option>
+                                    )) : (<div>Something went wrong</div>)}
                                 </select>
                             </div>
                             <div className='studentdescriptiondiv d-flex justify-content-center'>
@@ -215,43 +221,23 @@ function App() {
             </div>
 
             {/* modal of single student */}
-            <div
-                className='modal fade'
-                id='Singlestudent'
-                data-bs-backdrop='static'
-                data-bs-keyboard='false'
-                tabIndex='-1'
-                aria-labelledby='staticBackdropLabel'
-                aria-hidden='true'
-            >
-                <div className='modal-dialog'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h1 className='modal-title fs-3' id='staticBackdropLabel'>
-                                {cuurentSinglestudent.studentName}'s data
-                            </h1>
-                            <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            <div className="modal fade" id="Singlestudent" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            {console.log(cuurentSinglestudent)}
+                            <h1 className="modal-title fs-3" id="staticBackdropLabel">{cuurentSinglestudent.studentname}'s data</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div className='modal-body singlestudentDataModalBody d-flex flex-column'>
-                            <span>
-                                student Name: <span className='mainWordsinSPDMB'>{cuurentSinglestudent.studentName}</span>
-                            </span>
-                            <span>
-                                student Id: <span className='mainWordsinSPDMB'>{cuurentSinglestudent.studentrupees}</span>
-                            </span>
-                            <span>
-                                student Description: <span className='mainWordsinSPDMB'>{cuurentSinglestudent.studentdescription}</span>
-                            </span>
-                            <span>
-                                Date: <span className='mainWordsinSPDMB'>{cuurentSinglestudent.studentmonth}/{cuurentSinglestudent.studentday}/{cuurentSinglestudent.studentyear}</span>
-                            </span>
+                        <div className="modal-body singlestudentDataModalBody d-flex flex-column">
+                            <span>Student Name: <span className='mainWordsinSPDMB'>{cuurentSinglestudent.studentname}</span></span>
+                            <span>Student Id: <span className='mainWordsinSPDMB'>{cuurentSinglestudent.id}</span></span>
+                            <span>Student Attendece: <span className='mainWordsinSPDMB'>{formatDate(cuurentSinglestudent.updatedAt)}</span></span>
                         </div>
 
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-bs-dismiss='modal'>
-                                Close
-                            </button>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -283,7 +269,7 @@ function App() {
                         placeholder='Search'
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setIsSearchFocused(false)}
-                        onChange={(e) => setsearchInput(e.target.value)}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 seacrhFoo();
@@ -303,7 +289,7 @@ function App() {
                         <h5 style={{ flex: 1 }}>Student Id</h5>
                         <h5 style={{ flex: 1 }}>Student Course</h5>
                     </div>
-                    {!studentsData.length ? 'No data!' : studentsData.map((x, i) => <Singlestudentdata key={i} data={x} />)}
+                    {!studentsData ? 'Loading...' : studentsData.length === 0 ? 'No data!' : studentsData.map((x, i) => <Singlestudentdata key={i} data={x} />)}
                 </div>
             </div>
         </div>

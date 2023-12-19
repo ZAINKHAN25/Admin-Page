@@ -11,8 +11,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home/>}/>
-        <Route path="login" element={<Login/>}/>
-        <Route path="verifytoken" element={<Verifytoken/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/verifytoken" element={<Verifytoken/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
     </BrowserRouter>
